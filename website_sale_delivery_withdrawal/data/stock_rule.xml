@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="stock_route_just_in_time" model="stock.location.route">
+            <field name="name">Buy Just-in-Time</field>
+            <field name="sequence">0</field>
+            <field name="product_selectable">product</field>
+        </record>
+
+        <record id="stock_rule_pickup_group" model="stock.rule">
+            <field name="name">Buy Pick Up</field>
+            <field name="action">buy</field>
+            <field name="picking_type_id" ref="stock.picking_type_in"/>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+            <field name="route_id" ref="stock_route_just_in_time"/>
+            <field name="group_propagation_option">group</field>
+        </record>
+    </data>
+</odoo>

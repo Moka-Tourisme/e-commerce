@@ -1,0 +1,196 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* website_sale_delivery_withdrawal
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-21 12:49+0000\n"
+"PO-Revision-Date: 2023-06-21 12:49+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: website_sale_delivery_withdrawal
+#: code:addons/website_sale_delivery_withdrawal/models/stock_rule.py:0
+#: code:addons/website_sale_delivery_withdrawal/models/stock_rule.py:0
+#, python-format
+msgid "+ %d day(s)"
+msgstr ""
+
+#. module: website_sale_delivery_withdrawal
+#: model:stock.location.route,name:website_sale_delivery_withdrawal.stock_route_just_in_time
+msgid "Buy Just-in-Time"
+msgstr "Acheter juste à temps"
+
+#. module: website_sale_delivery_withdrawal
+#: model:stock.rule,name:website_sale_delivery_withdrawal.stock_rule_pickup_group
+msgid "Buy Pick Up"
+msgstr "Acheter point retrait"
+
+#. module: website_sale_delivery_withdrawal
+#. openerp-web
+#: code:addons/website_sale_delivery_withdrawal/static/src/xml/website_sale_delivery_withdrawal.xml:0
+#: code:addons/website_sale_delivery_withdrawal/static/src/xml/website_sale_delivery_withdrawal.xml:0
+#, python-format
+msgid "Cancel"
+msgstr ""
+
+#. module: website_sale_delivery_withdrawal
+#. openerp-web
+#: code:addons/website_sale_delivery_withdrawal/static/src/xml/website_sale_delivery_withdrawal.xml:0
+#, python-format
+msgid "Choose this withdrawal point"
+msgstr "Choisir ce point de retrait"
+
+#. module: website_sale_delivery_withdrawal
+#. openerp-web
+#: code:addons/website_sale_delivery_withdrawal/static/src/xml/website_sale_delivery_withdrawal.xml:0
+#, python-format
+msgid "Choose your withdrawal Point"
+msgstr "Choisissez votre point de retrait"
+
+#. module: website_sale_delivery_withdrawal
+#. openerp-web
+#: code:addons/website_sale_delivery_withdrawal/static/src/xml/website_sale_delivery_withdrawal.xml:0
+#, python-format
+msgid "Close"
+msgstr ""
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model,name:website_sale_delivery_withdrawal.model_res_partner
+msgid "Contact"
+msgstr ""
+
+#. module: website_sale_delivery_withdrawal
+#: code:addons/website_sale_delivery_withdrawal/models/purchase.py:0
+#, python-format
+msgid "Extra line with %s "
+msgstr ""
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_partner__fri
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_users__fri
+msgid "Friday"
+msgstr "Vendredi"
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model.fields.selection,name:website_sale_delivery_withdrawal.selection__stock_rule__group_propagation_option__group
+msgid "Group"
+msgstr "Grouper"
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model,name:website_sale_delivery_withdrawal.model_stock_warehouse_orderpoint
+msgid "Minimum Inventory Rule"
+msgstr "Règle de stock minimum."
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_partner__mon
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_users__mon
+msgid "Monday"
+msgstr "Lundi"
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_sale_order__picking_type_id
+msgid "Operation Type"
+msgstr "Type d'opération"
+
+#. module: website_sale_delivery_withdrawal
+#: code:addons/website_sale_delivery_withdrawal/models/stock_rule.py:0
+#: code:addons/website_sale_delivery_withdrawal/models/stock_rule.py:0
+#, python-format
+msgid "Pickup Date"
+msgstr "Date de ramassage"
+
+#. module: website_sale_delivery_withdrawal
+#: model_terms:ir.ui.view,arch_db:website_sale_delivery_withdrawal.view_partner_property_withdrawal_inherit
+msgid "Pickup order days"
+msgstr "Jours de ramassage"
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_stock_rule__group_propagation_option
+msgid "Propagation of Procurement Group"
+msgstr "Déploiement du groupe d'approvisionnement"
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model,name:website_sale_delivery_withdrawal.model_purchase_order
+msgid "Purchase Order"
+msgstr "Commande fournisseur"
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model,name:website_sale_delivery_withdrawal.model_purchase_order_line
+msgid "Purchase Order Line"
+msgstr "Ligne de commande d'achat"
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model,name:website_sale_delivery_withdrawal.model_sale_order
+msgid "Sales Order"
+msgstr "Bon de commande"
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model,name:website_sale_delivery_withdrawal.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "Ligne de bons de commande"
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_partner__sat
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_users__sat
+msgid "Saturday"
+msgstr "Samedi"
+
+#. module: website_sale_delivery_withdrawal
+#. openerp-web
+#: code:addons/website_sale_delivery_withdrawal/static/src/xml/website_sale_delivery_withdrawal.xml:0
+#, python-format
+msgid "Send to this withdrawal point"
+msgstr "Envoyer vers ce point de retrait"
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model,name:website_sale_delivery_withdrawal.model_stock_rule
+msgid "Stock Rule"
+msgstr "Règle de stock minimum"
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_partner__sun
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_users__sun
+msgid "Sunday"
+msgstr "Dimanche"
+
+#. module: website_sale_delivery_withdrawal
+#: code:addons/website_sale_delivery_withdrawal/models/stock_rule.py:0
+#, python-format
+msgid ""
+"There is no matching vendor price to generate the purchase order for product"
+" %s (no vendor defined, minimum quantity not reached, dates not valid, ...)."
+" Go on the product form and complete the list of vendors."
+msgstr ""
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_partner__thu
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_users__thu
+msgid "Thursday"
+msgstr "Jeudi"
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_partner__tue
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_users__tue
+msgid "Tuesday"
+msgstr "Mardi"
+
+#. module: website_sale_delivery_withdrawal
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_partner__wed
+#: model:ir.model.fields,field_description:website_sale_delivery_withdrawal.field_res_users__wed
+msgid "Wednesday"
+msgstr "Mercredi"
+
+#. module: website_sale_delivery_withdrawal
+#: code:addons/website_sale_delivery_withdrawal/models/purchase.py:0
+#, python-format
+msgid ""
+"You cannot change the type of a purchase order line. Instead you should "
+"delete the current line and create a new line of the proper type."
+msgstr ""

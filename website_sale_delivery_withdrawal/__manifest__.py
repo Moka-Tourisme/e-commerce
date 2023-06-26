@@ -8,7 +8,7 @@
     """,
     'category': 'Website/Website',
     'version': '15.0.0.1.0',
-    'depends': ['website_sale_delivery', 'withdrawal_methods', 'purchase', 'purchase_stock', 'stock'],
+    'depends': ['website_sale_delivery', 'delivery_withdrawal_method', 'purchase', 'purchase_stock', 'stock'],
     'data': [
         'views/res_partner_views.xml',
         'data/stock_rule.xml',

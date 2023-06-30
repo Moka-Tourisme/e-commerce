@@ -62,6 +62,7 @@ WebsiteSaleDeliveryWidget.include({
         this.$calendar = 0;
         this.$number_delivery_period = 0;
         this.$select_delivery_period = "day"
+        this.$closing_period = []
         const addressCard = document.querySelector('.addressCard')
         this.$modal_withdrawal.find('#btn_confirm_relay').on('click', this._onClickBtnConfirmWithdrawalPoint.bind(this));
 
@@ -75,16 +76,30 @@ WebsiteSaleDeliveryWidget.include({
 
         await this._rpc({
             model: 'delivery.carrier', method: 'search_read', kwargs: {
-                fields: ['number_delivery_period', 'select_delivery_period'], domain: [['id', '=', result.carrier_id]],
+                fields: ['number_delivery_period', 'select_delivery_period', 'closing_period_ids'],
+                domain: [['id', '=', result.carrier_id]],
             }
         }).then(async (carrier_data) => {
             this.$number_delivery_period = carrier_data[0].number_delivery_period
             this.$select_delivery_period = carrier_data[0].select_delivery_period
+            this.$closing_period = []
+            this.$carrier_id = carrier_data[0].id
         })
+        // Get all closing_period, and add them in closing_period array
+        await this._rpc({
+            model: 'delivery.closing.period', method: 'search_read', kwargs: {
+                fields: ['date_from', 'date_to'], domain: [['closing_id.id', '=', this.$carrier_id]],
+            }
+        }).then(async (result) => {
+            for (const item of result) {
+                this.$closing_period.push(item)
+            }
+        })
+
         for (const item of result.withdrawal_point.allowed_points) {
             await this._rpc({
                 model: 'delivery.withdrawal.point', method: 'search_read', kwargs: {
-                    fields: ['partner_address_street', 'partner_address_city', 'partner_address_zip', 'partner_country_id', 'partner_image_url', 'resource_calendar_id', 'stock_picking_type_id'],
+                    fields: ['partner_id', 'partner_address_street', 'partner_address_city', 'partner_address_zip', 'partner_country_id', 'partner_image_url', 'resource_calendar_id', 'stock_picking_type_id'],
                     domain: [['id', '=', item]],
                 }
             }).then(async (result) => {
@@ -97,15 +112,17 @@ WebsiteSaleDeliveryWidget.include({
                         modal.find('.WP_RList')[0].querySelector('.active').classList.remove('active');
                     }
                     clone.classList.add('active');
+                    console.log(result[0])
                     this.$calendar = result[0].resource_calendar_id[0]
                     this.$city = result[0].partner_address_city
                     this.$street = result[0].partner_address_street
                     this.$zip = result[0].partner_address_zip
                     this.$country = result[0].partner_country_id
                     this.$picking_type_id = result[0].stock_picking_type_id[0]
+                    this.$withdrawal_point_id = result[0].id
                     this._onClickWithdrawalPoint()
                 });
-                clone.querySelector('.WPTitle').innerHTML = (result[0].partner_address_city).toUpperCase();
+                clone.querySelector('.WPTitle').innerHTML = (result[0].partner_id[1]).toUpperCase();
                 clone.querySelector('.WPStreet').innerHTML = clone.querySelector('.WPStreet').innerHTML + (result[0].partner_address_street).toUpperCase();
                 clone.querySelector('.WPCity').innerHTML = (result[0].partner_address_zip) + " - " + (result[0].partner_address_city).toUpperCase();
                 clone.querySelector('.imgPartner').src = "data:image/gif;base64," + result[0].partner_image_url;
@@ -154,84 +171,141 @@ WebsiteSaleDeliveryWidget.include({
                 fields: ['attendance_ids'], domain: [['id', '=', id]]
             }
         }).then(async (resource_calendar) => {
-            let working_days = [];
-            // For each working lines, get the data and update the UI
-            for (const calendar_attendance of resource_calendar[0].attendance_ids) {
-                await this._rpc({
-                    model: 'resource.calendar.attendance', method: 'search_read', kwargs: {
-                        fields: ['hour_from', 'hour_to', 'dayofweek', 'hour_delay', 'select_type_delay'],
-                        domain: [['id', '=', calendar_attendance]]
-                    }
-                }).then(async (resource_calendar_attendance) => {
-                    let dayOfWeek = parseInt(resource_calendar_attendance[0].dayofweek) + 1
-                    let hour_delay = resource_calendar_attendance[0].hour_delay
-                    let select_delay_type = resource_calendar_attendance[0].select_type_delay
-                    let select_type = this.$select_delivery_period
-                    let dateToday = new Date();
-                    let lastDate = new Date(dateToday)
-                    if (select_type == "day") {
-                        lastDate.setDate(lastDate.getDate() + this.$number_delivery_period);
-                    } else if (select_type == "week") {
-                        lastDate.setDate(lastDate.getDate() + 7 * this.$number_delivery_period);
-                    } else {
-                        lastDate.setMonth(lastDate.getMonth() + this.$number_delivery_period);
-                    }
-                    let numOfDays = ((dayOfWeek + 7 - dateToday.getDay()) % 7)
-                    let nextDay = new Date(this.$first_pickup_date)
-                    let delay = 0
-                    nextDay.setDate(nextDay.getDate() + numOfDays)
-                    nextDay.setHours(0, 0, 0, 0)
-                    while (nextDay <= lastDate) {
-                        let dateWithdrawal = {}
-                        if (select_delay_type == "hour") {
-                            delay = Math.floor(Math.abs(nextDay - dateToday) / 3600000)
+                let working_days = [];
+                // For each working lines, get the data and update the UI
+                for (const calendar_attendance of resource_calendar[0].attendance_ids) {
+                    await this._rpc({
+                        model: 'resource.calendar.attendance', method: 'search_read', kwargs: {
+                            fields: ['hour_from', 'hour_to', 'dayofweek', 'hour_delay', 'select_type_delay'],
+                            domain: [['id', '=', calendar_attendance]]
                         }
-                        if (select_delay_type == "day") {
-                            delay = Math.floor(Math.abs(nextDay - dateToday) / (1000 * 60 * 60 * 24))
-                        } else if (select_delay_type == "week") {
-                            delay = Math.floor(Math.abs(nextDay - dateToday) / (1000 * 60 * 60 * 24 * 7))
+                    }).then(async (resource_calendar_attendance) => {
+                        let dayOfWeek = parseInt(resource_calendar_attendance[0].dayofweek) + 1
+                        let hour_delay = resource_calendar_attendance[0].hour_delay
+                        let select_delay_type = resource_calendar_attendance[0].select_type_delay
+                        let select_type = this.$select_delivery_period
+                        let closing_period = this.$closing_period
+                        console.log(closing_period)
+                        let dateToday = new Date();
+                        let lastDate = new Date(dateToday)
+                        if (select_type == "day") {
+                            lastDate.setDate(lastDate.getDate() + this.$number_delivery_period);
+                        } else if (select_type == "week") {
+                            lastDate.setDate(lastDate.getDate() + 7 * this.$number_delivery_period);
+                        } else {
+                            lastDate.setMonth(lastDate.getMonth() + this.$number_delivery_period);
                         }
-                        if (delay >= hour_delay) {
-                            dateWithdrawal.city = this.$city
-                            dateWithdrawal.street = this.$street
-                            dateWithdrawal.zip = this.$zip
-                            dateWithdrawal.country = this.$country
-                            dateWithdrawal.hour_from = this._convertFloatToTime(resource_calendar_attendance[0].hour_from)
-                            dateWithdrawal.hour_to = this._convertFloatToTime(resource_calendar_attendance[0].hour_to)
-                            dateWithdrawal.date = new Date(nextDay)
-                            dateWithdrawal.picking_type_id = this.$picking_type_id
-                            dateWithdrawal.commitment_date = new Date(nextDay.getFullYear(), nextDay.getMonth(), nextDay.getDate(), dateWithdrawal.hour_from.toString().split(":")[0], dateWithdrawal.hour_from.toString().split(":")[1]).toLocaleDateString("fr", {
-                                hour: '2-digit', minute: '2-digit'
-                            })
-                            working_days.push(dateWithdrawal)
+                        let numOfDays = ((dayOfWeek + 7 - dateToday.getDay()) % 7)
+                        let nextDay = new Date(this.$first_pickup_date)
+                        closing_period.forEach((item) => {
+                            //     Create a date for date_from and set the time to 00:00:00
+                            let date_from = new Date(item.date_from)
+                            date_from.setHours(0, 0, 0, 0)
+                            //     If lastDate is before date_from, then we don't need to check the closing period and we remove the item from the list
+                            if (lastDate < date_from) {
+                                // Supprimer l'item de la liste
+                                console.log("suppression")
+                                closing_period.splice(closing_period.indexOf(item), 1)
+                            }
+                        })
+                        let delay = 0
+                        nextDay.setDate(nextDay.getDate() + numOfDays)
+                        nextDay.setHours(0, 0, 0, 0)
+
+                        while (nextDay <= lastDate) {
+                            if (closing_period.length > 0) {
+                                closing_period.forEach((item) => {
+                                    //     Create date_from and date_to for each item and set the time to 00:00:00
+                                    let date_from = new Date(item.date_from)
+                                    date_from.setHours(0, 0, 0, 0)
+                                    let date_to = new Date(item.date_to)
+                                    date_to.setHours(0, 0, 0, 0)
+                                    //     Check if the date is not between date_from and date_to
+                                    if (!(nextDay >= date_from && nextDay <= date_to)) {
+                                        let dateWithdrawal = {}
+                                        if (select_delay_type == "hour") {
+                                            delay = Math.floor(Math.abs(nextDay - dateToday) / 3600000)
+                                        }
+                                        if (select_delay_type == "day") {
+                                            delay = Math.floor(Math.abs(nextDay - dateToday) / (1000 * 60 * 60 * 24))
+                                        } else if (select_delay_type == "week") {
+                                            delay = Math.floor(Math.abs(nextDay - dateToday) / (1000 * 60 * 60 * 24 * 7))
+                                        }
+                                        if (delay >= hour_delay) {
+                                            dateWithdrawal.city = this.$city
+                                            dateWithdrawal.street = this.$street
+                                            dateWithdrawal.zip = this.$zip
+                                            dateWithdrawal.country = this.$country
+                                            dateWithdrawal.hour_from = this._convertFloatToTime(resource_calendar_attendance[0].hour_from)
+                                            dateWithdrawal.hour_to = this._convertFloatToTime(resource_calendar_attendance[0].hour_to)
+                                            dateWithdrawal.date = new Date(nextDay)
+                                            dateWithdrawal.picking_type_id = this.$picking_type_id
+                                            dateWithdrawal.commitment_date = new Date(nextDay.getFullYear(), nextDay.getMonth(), nextDay.getDate(), dateWithdrawal.hour_from.toString().split(":")[0], dateWithdrawal.hour_from.toString().split(":")[1]).toLocaleDateString("fr", {
+                                                hour: '2-digit', minute: '2-digit'
+                                            })
+                                            dateWithdrawal.commitment_date_end = new Date(nextDay.getFullYear(), nextDay.getMonth(), nextDay.getDate(), dateWithdrawal.hour_to.toString().split(":")[0], dateWithdrawal.hour_to.toString().split(":")[1]).toLocaleDateString("fr", {
+                                                hour: '2-digit', minute: '2-digit'
+                                            })
+                                            dateWithdrawal.withdrawal_point_id = this.$withdrawal_point_id
+                                            working_days.push(dateWithdrawal)
+                                        }
+                                    } else {
+                                        console.log("date in period ", nextDay)
+                                    }
+                                })
+                            } else {
+                                let dateWithdrawal = {}
+                                if (select_delay_type == "hour") {
+                                    delay = Math.floor(Math.abs(nextDay - dateToday) / 3600000)
+                                }
+                                if (select_delay_type == "day") {
+                                    delay = Math.floor(Math.abs(nextDay - dateToday) / (1000 * 60 * 60 * 24))
+                                } else if (select_delay_type == "week") {
+                                    delay = Math.floor(Math.abs(nextDay - dateToday) / (1000 * 60 * 60 * 24 * 7))
+                                }
+                                if (delay >= hour_delay) {
+                                    dateWithdrawal.city = this.$city
+                                    dateWithdrawal.street = this.$street
+                                    dateWithdrawal.zip = this.$zip
+                                    dateWithdrawal.country = this.$country
+                                    dateWithdrawal.hour_from = this._convertFloatToTime(resource_calendar_attendance[0].hour_from)
+                                    dateWithdrawal.hour_to = this._convertFloatToTime(resource_calendar_attendance[0].hour_to)
+                                    dateWithdrawal.date = new Date(nextDay)
+                                    dateWithdrawal.picking_type_id = this.$picking_type_id
+                                    dateWithdrawal.commitment_date = new Date(nextDay.getFullYear(), nextDay.getMonth(), nextDay.getDate(), dateWithdrawal.hour_from.toString().split(":")[0], dateWithdrawal.hour_from.toString().split(":")[1]).toLocaleDateString("fr", {
+                                        hour: '2-digit', minute: '2-digit'
+                                    })
+                                    working_days.push(dateWithdrawal)
+                                }
+                            }
+                            nextDay.setDate(nextDay.getDate() + 7)
                         }
-                        nextDay.setDate(nextDay.getDate() + 7)
-                    }
+                    })
+                }
+                working_days.sort((a, b) => {
+                    return new Date(a.date).getTime() - new Date(b.date).getTime();
+                }).forEach((sortedDate, index) => {
+                    let cloneWithdrawal = withdrawalCard.cloneNode(true);
+                    cloneWithdrawal.classList.remove('d-none')
+                    cloneWithdrawal.addEventListener('click', () => {
+                        if (modal.find('.WP_RDaysList')[0].querySelector('.active')) {
+                            modal.find('.WP_RDaysList')[0].querySelector('.active').classList.remove('active');
+                        }
+                        this.lastRelaySelected = sortedDate;
+                        console.log(this.lastRelaySelected)
+                        this.$modal_withdrawal.find('#btn_confirm_withdrawal_point').removeClass('disabled');
+                        cloneWithdrawal.classList.add('active');
+                    });
+                    cloneWithdrawal.querySelector('.WPDay').innerHTML = (new Date(sortedDate.date).toLocaleDateString(undefined, {
+                        day: 'numeric'
+                    })).toUpperCase()
+                    cloneWithdrawal.querySelector('.WPMonth').innerHTML = (new Date(sortedDate.date).toLocaleDateString(undefined, {month: 'short'})).toUpperCase()
+                    cloneWithdrawal.querySelector('.WPHourSlotFrom').innerHTML = sortedDate.hour_from;
+                    cloneWithdrawal.querySelector('.WPHourSlotTo').innerHTML = sortedDate.hour_to;
+                    modal.find('.WP_RDaysList')[0].append(cloneWithdrawal);
                 })
             }
-            working_days.sort((a, b) => {
-                return new Date(a.date).getTime() - new Date(b.date).getTime();
-            }).forEach((sortedDate, index) => {
-                let cloneWithdrawal = withdrawalCard.cloneNode(true);
-                cloneWithdrawal.classList.remove('d-none')
-                cloneWithdrawal.addEventListener('click', () => {
-                    if (modal.find('.WP_RDaysList')[0].querySelector('.active')) {
-                        modal.find('.WP_RDaysList')[0].querySelector('.active').classList.remove('active');
-                    }
-                    this.lastRelaySelected = sortedDate;
-                    console.log(this.lastRelaySelected)
-                    this.$modal_withdrawal.find('#btn_confirm_withdrawal_point').removeClass('disabled');
-                    cloneWithdrawal.classList.add('active');
-                });
-                cloneWithdrawal.querySelector('.WPDay').innerHTML = (new Date(sortedDate.date).toLocaleDateString(undefined, {
-                    day: 'numeric'
-                })).toUpperCase()
-                cloneWithdrawal.querySelector('.WPMonth').innerHTML = (new Date(sortedDate.date).toLocaleDateString(undefined, {month: 'short'})).toUpperCase()
-                cloneWithdrawal.querySelector('.WPHourSlotFrom').innerHTML = sortedDate.hour_from;
-                cloneWithdrawal.querySelector('.WPHourSlotTo').innerHTML = sortedDate.hour_to;
-                modal.find('.WP_RDaysList')[0].append(cloneWithdrawal);
-            })
-        })
+        )
     },
     _convertFloatToTime: function (number) {
         // Check sign of given number

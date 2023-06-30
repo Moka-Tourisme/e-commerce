@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="website_sale_delivery_withdrawal_address_on_payment" inherit_id="website_sale.address_on_payment">
+        <xpath expr="//div[@id='shipping_and_billing']" position="inside">
+            <div t-if="order.carrier_id.is_withdrawal_point" groups="sale.group_delivery_invoice_address">
+                <b>Schedule:</b>
+                <span t-field="order.commitment_date" t-options='{"format": "d MMM yyyy"}' class="address-inline"/>
+                <span>from</span>
+                <span t-esc="hour_from" class="address-inline"/>
+                <span>to</span>
+                <span t-esc="hour_to" class="address-inline"/>
+            </div>
+        </xpath>
+    </template>
+
+<!--    <template id="website_sale_delivery_withdrawal_confirmation" inherit_id="website_sale.confirmation">-->
+<!--        <xpath expr="//div[has_class('card_body')]" position="inside">-->
+<!--            <div t-if="order.carrier_id.is_withdrawal_point" groups="sale.group_delivery_invoice_address">-->
+<!--                <b>Schedule:</b>-->
+<!--                <span t-field="order.commitment_date" t-options='{"format": "d MMM yyyy"}' class="address-inline"/>-->
+<!--                <span>from</span>-->
+<!--                <span t-esc="hour_from" class="address-inline"/>-->
+<!--                <span>to</span>-->
+<!--                <span t-esc="hour_to" class="address-inline"/>-->
+<!--            </div>-->
+<!--        </xpath>-->
+<!--    </template>-->
+</odoo>

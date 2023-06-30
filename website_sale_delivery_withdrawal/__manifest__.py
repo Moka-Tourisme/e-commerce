@@ -8,10 +8,13 @@
     """,
     'category': 'Website/Website',
     'version': '15.0.0.1.0',
-    'depends': ['website_sale_delivery', 'delivery_withdrawal_method', 'purchase', 'purchase_stock', 'stock'],
+    'depends': ['website_sale_delivery', 'delivery_withdrawal_method', 'purchase', 'purchase_stock', 'stock', 'sale'],
     'data': [
         'views/res_partner_views.xml',
+        'views/sale_order_views.xml',
+        'views/website_sale.xml',
         'data/stock_rule.xml',
+        'data/mail_template_data.xml',
     ],
     'assets': {
         'web.assets_frontend': [

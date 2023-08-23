@@ -6,8 +6,13 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='sale_shipping']" position="inside">
-                <field name="commitment_date_end"/>
-                <field name="withdrawal_point_id"/>
+                <field name="is_withdrawal" invisible="1"/>
+                <field name="commitment_hour_from"
+                       attrs="{'invisible': [('is_withdrawal', '=', False)]}"/>
+                <field name="commitment_hour_to"
+                       attrs="{'invisible': [('is_withdrawal', '=', False)]}"/>
+                <field name="withdrawal_point_id"
+                       attrs="{'invisible': [('is_withdrawal', '=', False)]}"/>
             </xpath>
         </field>
     </record>

@@ -9,9 +9,6 @@ import {UncaughtCorsError} from "@web/core/errors/error_service";
 
 const WebsiteSaleDeliveryWidget = publicWidget.registry.websiteSaleDelivery;
 
-const errorHandlerRegistry = registry.category("error_handlers");
-const rpc = require('web.rpc');
-
 function corsIgnoredErrorHandler(env, error) {
     if (error instanceof UncaughtCorsError) {
         return true;
@@ -112,7 +109,6 @@ WebsiteSaleDeliveryWidget.include({
                         modal.find('.WP_RList')[0].querySelector('.active').classList.remove('active');
                     }
                     clone.classList.add('active');
-                    console.log(result[0])
                     this.$calendar = result[0].resource_calendar_id[0]
                     this.$city = result[0].partner_address_city
                     this.$street = result[0].partner_address_street
@@ -185,7 +181,6 @@ WebsiteSaleDeliveryWidget.include({
                         let select_delay_type = resource_calendar_attendance[0].select_type_delay
                         let select_type = this.$select_delivery_period
                         let closing_period = this.$closing_period
-                        console.log(closing_period)
                         let dateToday = new Date();
                         let lastDate = new Date(dateToday)
                         if (select_type == "day") {
@@ -204,7 +199,6 @@ WebsiteSaleDeliveryWidget.include({
                             //     If lastDate is before date_from, then we don't need to check the closing period and we remove the item from the list
                             if (lastDate < date_from) {
                                 // Supprimer l'item de la liste
-                                console.log("suppression")
                                 closing_period.splice(closing_period.indexOf(item), 1)
                             }
                         })
@@ -243,14 +237,12 @@ WebsiteSaleDeliveryWidget.include({
                                             dateWithdrawal.commitment_date = new Date(nextDay.getFullYear(), nextDay.getMonth(), nextDay.getDate(), dateWithdrawal.hour_from.toString().split(":")[0], dateWithdrawal.hour_from.toString().split(":")[1]).toLocaleDateString("fr", {
                                                 hour: '2-digit', minute: '2-digit'
                                             })
-                                            dateWithdrawal.commitment_date_end = new Date(nextDay.getFullYear(), nextDay.getMonth(), nextDay.getDate(), dateWithdrawal.hour_to.toString().split(":")[0], dateWithdrawal.hour_to.toString().split(":")[1]).toLocaleDateString("fr", {
-                                                hour: '2-digit', minute: '2-digit'
-                                            })
+                                            dateWithdrawal.commitment_hour_from = this._convertFloatToTime(resource_calendar_attendance[0].hour_from)
+                                            dateWithdrawal.commitment_hour_to = this._convertFloatToTime(resource_calendar_attendance[0].hour_to)
                                             dateWithdrawal.withdrawal_point_id = this.$withdrawal_point_id
                                             working_days.push(dateWithdrawal)
                                         }
                                     } else {
-                                        console.log("date in period ", nextDay)
                                     }
                                 })
                             } else {
@@ -275,6 +267,9 @@ WebsiteSaleDeliveryWidget.include({
                                     dateWithdrawal.commitment_date = new Date(nextDay.getFullYear(), nextDay.getMonth(), nextDay.getDate(), dateWithdrawal.hour_from.toString().split(":")[0], dateWithdrawal.hour_from.toString().split(":")[1]).toLocaleDateString("fr", {
                                         hour: '2-digit', minute: '2-digit'
                                     })
+                                    dateWithdrawal.commitment_hour_from = this._convertFloatToTime(resource_calendar_attendance[0].hour_from)
+                                    dateWithdrawal.commitment_hour_to = this._convertFloatToTime(resource_calendar_attendance[0].hour_to)
+                                    dateWithdrawal.withdrawal_point_id = this.$withdrawal_point_id
                                     working_days.push(dateWithdrawal)
                                 }
                             }
@@ -292,7 +287,6 @@ WebsiteSaleDeliveryWidget.include({
                             modal.find('.WP_RDaysList')[0].querySelector('.active').classList.remove('active');
                         }
                         this.lastRelaySelected = sortedDate;
-                        console.log(this.lastRelaySelected)
                         this.$modal_withdrawal.find('#btn_confirm_withdrawal_point').removeClass('disabled');
                         cloneWithdrawal.classList.add('active');
                     });

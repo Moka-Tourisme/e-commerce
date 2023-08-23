@@ -17,23 +17,15 @@ class WithdrawalPoints(http.Controller):
 
     @http.route(['/website_sale_delivery_withdrawal/update_shipping'], type='json', auth="public", website=True)
     def withdrawal_update_shipping(self, **data):
-        print("data ", data)
         order = request.website.sale_get_order()
         tz = request.context.get('tz', 'utc') or 'utc'
-        print("tz ", tz)
         commitment_date = datetime.strptime(data['commitment_date'], "%d/%m/%Y %H:%M")
         commitment_date = pytz.timezone(tz).localize(commitment_date)
         commitment_date = commitment_date.astimezone(timezone(tz)).replace(tzinfo=None)
-        # Diff between hours data['hour_from'] and data['hour_to'],
-        hour_from = int(data['hour_from'].split(':')[0])
-        hour_to = int(data['hour_to'].split(':')[0])
-        diffHour = hour_to - hour_from
-        # Diff between minutes from data['hour_from'] and data['hour_to'],
-        minute_from = int(data['hour_from'].split(':')[1])
-        minute_to = int(data['hour_to'].split(':')[1])
-        diffMinute = minute_to - minute_from
+        print("data", data)
         order.commitment_date = commitment_date
-        order.commitment_date_end = commitment_date + timedelta(hours=diffHour, minutes=diffMinute)
+        order.commitment_hour_from = data['hour_from']
+        order.commitment_hour_to = data['hour_to']
         order.withdrawal_point_id = data['withdrawal_point_id']
         order.picking_type_id = data['picking_type_id']
         if order.partner_id == request.website.user_id.sudo().partner_id:
@@ -52,16 +44,10 @@ class WithdrawalPoints(http.Controller):
         values = {
             'address': request.env['ir.qweb']._render('website_sale.address_on_payment', {
                 'order': order,
-                'hour_from': data['hour_from'],
-                'hour_to': data['hour_to'],
                 'only_services': order and order.only_services,
             }),
             'new_partner_shipping_id': order.partner_shipping_id.id,
         }
-        print("return values ", values)
-
-        print("values ", values)
-
         return values
 
     @http.route(['/website_sale_delivery_withdrawal/load_data'], type='json', auth="public", website=True)
@@ -78,6 +64,9 @@ class WithdrawalPoints(http.Controller):
             print("Entrée dans la boucle")
             if order_line.product_type == 'product' and order_line.free_qty_today <= 0:
                 product = order_line.product_id
+                if not product.seller_ids:
+                    raise UserError(
+                        _("There is no seller for the product %s. Please add one.") % product.name)
                 seller = product.seller_ids[0]
                 days = [seller.name.mon, seller.name.tue, seller.name.wed, seller.name.thu, seller.name.fri,
                         seller.name.sat, seller.name.sun]

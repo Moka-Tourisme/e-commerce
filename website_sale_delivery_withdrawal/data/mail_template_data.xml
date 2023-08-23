@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <function model="ir.model.data" name="write">
-           <function model="ir.model.data" name="search">
-                <value eval="[('module', '=', 'sale'), ('name', '=', 'mail_template_sale_confirmation')]"/>
-            </function>
-            <value eval="{'noupdate': False}"/>
-        </function>
-
-        <record id="sale.mail_template_sale_confirmation" model="mail.template">
-            <field name="name">Sales Order: Confirmation Email Modif</field>
+        <record id="mail_template_sale_confirmation_withdrawal" model="mail.template">
+            <field name="name">Sales Order Withdrawal: Confirmation Email</field>
             <field name="model_id" ref="sale.model_sale_order"/>
             <field name="subject">{{ object.company_id.name }} {{ (object.get_portal_last_transaction().state ==
                 'pending') and 'Pending Order' or 'Order' }} (Ref {{ object.name or 'n/a' }})
@@ -238,21 +231,28 @@
                                     </td>
                                 </tr>
                             </table>
+                            <table t-if="hasattr(object, 'carrier_id') and object.carrier_id" width="100%"
+                                   style="color: #454748; font-size: 12px;">
+                                <tr>
+                                    <td>
+                                        <b>Schedule:</b>
+                                        <span t-field="object.commitment_date" t-options='{"format": "d MMM yyyy"}'
+                                              class="address-inline"/>
+                                        <span>from</span>
+                                        <span t-esc="object.commitment_hour_from" class="address-inline"/>
+                                        <span>to</span>
+                                        <span t-esc="object.commitment_hour_to" class="address-inline"/>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </t>
                 </div>
             </field>
-            <field name="report_template" ref="sale.action_report_saleorder"/>
+            <field name="report_template" ref="website_sale_delivery_withdrawal.action_report_saleorder"/>
             <field name="report_name">{{ (object.name or '').replace('/','_') }}</field>
             <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="auto_delete" eval="True"/>
         </record>
-
-         <function model="ir.model.data" name="write">
-           <function model="ir.model.data" name="search">
-                <value eval="[('module', '=', 'sale'), ('name', '=', 'mail_template_sale_confirmation')]"/>
-            </function>
-            <value eval="{'noupdate': True}"/>
-        </function>
     </data>
 </odoo>

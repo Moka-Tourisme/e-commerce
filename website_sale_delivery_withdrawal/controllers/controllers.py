@@ -22,7 +22,6 @@ class WithdrawalPoints(http.Controller):
         commitment_date = datetime.strptime(data['commitment_date'], "%d/%m/%Y %H:%M")
         commitment_date = pytz.timezone(tz).localize(commitment_date)
         commitment_date = commitment_date.astimezone(timezone(tz)).replace(tzinfo=None)
-        print("data", data)
         order.commitment_date = commitment_date
         order.commitment_hour_from = data['hour_from']
         order.commitment_hour_to = data['hour_to']
@@ -36,6 +35,8 @@ class WithdrawalPoints(http.Controller):
             'zip': data['zip'],
             'city': data['city'],
             'country_id': data['country'],
+            'phone': order.partner_id.phone,
+            'email': order.partner_id.email,
         })
         if order.partner_shipping_id != partner_shipping:
             order.partner_shipping_id = partner_shipping

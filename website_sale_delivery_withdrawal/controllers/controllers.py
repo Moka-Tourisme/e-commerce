@@ -14,7 +14,6 @@ from pytz import timezone
 
 
 class WithdrawalPoints(http.Controller):
-
     @http.route(['/website_sale_delivery_withdrawal/update_shipping'], type='json', auth="public", website=True)
     def withdrawal_update_shipping(self, **data):
         order = request.website.sale_get_order()
@@ -22,6 +21,7 @@ class WithdrawalPoints(http.Controller):
         commitment_date = datetime.strptime(data['commitment_date'], "%d/%m/%Y %H:%M")
         commitment_date = pytz.timezone(tz).localize(commitment_date)
         commitment_date = commitment_date.astimezone(timezone(tz)).replace(tzinfo=None)
+        print("data", data)
         order.commitment_date = commitment_date
         order.commitment_hour_from = data['hour_from']
         order.commitment_hour_to = data['hour_to']
@@ -35,8 +35,6 @@ class WithdrawalPoints(http.Controller):
             'zip': data['zip'],
             'city': data['city'],
             'country_id': data['country'],
-            'phone': order.partner_id.phone,
-            'email': order.partner_id.email,
         })
         if order.partner_shipping_id != partner_shipping:
             order.partner_shipping_id = partner_shipping
@@ -63,6 +61,9 @@ class WithdrawalPoints(http.Controller):
         new_date_planned = datetime.today()
         for order_line in order_lines:
             print("Entrée dans la boucle")
+            print("order_line ", order_line)
+            print("order_line.product_type ", order_line.product_type)
+            print("order_line.product_id ", order_line.product_id)
             if order_line.product_type == 'product' and order_line.free_qty_today <= 0:
                 product = order_line.product_id
                 if not product.seller_ids:

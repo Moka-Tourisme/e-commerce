@@ -70,7 +70,6 @@ WebsiteSaleDeliveryWidget.include({
         }).then((o) => {
             this.$first_pickup_date = new Date(o.first_pickup_date)
         });
-
         await this._rpc({
             model: 'delivery.carrier', method: 'search_read', kwargs: {
                 fields: ['number_delivery_period', 'select_delivery_period', 'closing_period_ids'],
@@ -160,7 +159,6 @@ WebsiteSaleDeliveryWidget.include({
         modal.find('.WP_RDaysList')[0].innerHTML = ""
         let id = this.$calendar
 
-
         // Search the planning for the current withdrawal point selected
         await this._rpc({
             model: 'resource.calendar', method: 'search_read', kwargs: {
@@ -176,7 +174,8 @@ WebsiteSaleDeliveryWidget.include({
                             domain: [['id', '=', calendar_attendance]]
                         }
                     }).then(async (resource_calendar_attendance) => {
-                        let dayOfWeek = parseInt(resource_calendar_attendance[0].dayofweek) + 1
+                        let dayOfWeek = parseInt(resource_calendar_attendance[0].dayofweek)
+                        console.log("dayofweek", dayOfWeek)
                         let hour_delay = resource_calendar_attendance[0].hour_delay
                         let select_delay_type = resource_calendar_attendance[0].select_type_delay
                         let select_type = this.$select_delivery_period
@@ -190,8 +189,11 @@ WebsiteSaleDeliveryWidget.include({
                         } else {
                             lastDate.setMonth(lastDate.getMonth() + this.$number_delivery_period);
                         }
-                        let numOfDays = ((dayOfWeek + 7 - dateToday.getDay()) % 7)
+                        // From nextDay get next day corresponding to dayOfWeek
                         let nextDay = new Date(this.$first_pickup_date)
+                        console.log("nextDay", nextDay)
+                        let numOfDays = dayOfWeek - nextDay.getDay() +1
+                        console.log("numOfDays", numOfDays)
                         closing_period.forEach((item) => {
                             //     Create a date for date_from and set the time to 00:00:00
                             let date_from = new Date(item.date_from)
@@ -205,7 +207,7 @@ WebsiteSaleDeliveryWidget.include({
                         let delay = 0
                         nextDay.setDate(nextDay.getDate() + numOfDays)
                         nextDay.setHours(0, 0, 0, 0)
-
+                        console.log("nextDay", nextDay)
                         while (nextDay <= lastDate) {
                             if (closing_period.length > 0) {
                                 closing_period.forEach((item) => {
@@ -277,6 +279,7 @@ WebsiteSaleDeliveryWidget.include({
                         }
                     })
                 }
+                console.log("working_days", working_days)
                 working_days.sort((a, b) => {
                     return new Date(a.date).getTime() - new Date(b.date).getTime();
                 }).forEach((sortedDate, index) => {

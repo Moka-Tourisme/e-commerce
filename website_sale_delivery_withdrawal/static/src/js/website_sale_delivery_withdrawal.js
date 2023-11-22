@@ -70,6 +70,7 @@ WebsiteSaleDeliveryWidget.include({
         }).then((o) => {
             this.$first_pickup_date = new Date(o.first_pickup_date)
         });
+
         await this._rpc({
             model: 'delivery.carrier', method: 'search_read', kwargs: {
                 fields: ['number_delivery_period', 'select_delivery_period', 'closing_period_ids'],
@@ -159,6 +160,7 @@ WebsiteSaleDeliveryWidget.include({
         modal.find('.WP_RDaysList')[0].innerHTML = ""
         let id = this.$calendar
 
+
         // Search the planning for the current withdrawal point selected
         await this._rpc({
             model: 'resource.calendar', method: 'search_read', kwargs: {
@@ -174,8 +176,7 @@ WebsiteSaleDeliveryWidget.include({
                             domain: [['id', '=', calendar_attendance]]
                         }
                     }).then(async (resource_calendar_attendance) => {
-                        let dayOfWeek = parseInt(resource_calendar_attendance[0].dayofweek)
-                        console.log("dayofweek", dayOfWeek)
+                        let dayOfWeek = parseInt(resource_calendar_attendance[0].dayofweek) + 1
                         let hour_delay = resource_calendar_attendance[0].hour_delay
                         let select_delay_type = resource_calendar_attendance[0].select_type_delay
                         let select_type = this.$select_delivery_period
@@ -189,11 +190,9 @@ WebsiteSaleDeliveryWidget.include({
                         } else {
                             lastDate.setMonth(lastDate.getMonth() + this.$number_delivery_period);
                         }
-                        // From nextDay get next day corresponding to dayOfWeek
+                        let numOfDays = ((dayOfWeek + 7 - dateToday.getDay()) % 7)
                         let nextDay = new Date(this.$first_pickup_date)
-                        console.log("nextDay", nextDay)
-                        let numOfDays = dayOfWeek - nextDay.getDay() +1
-                        console.log("numOfDays", numOfDays)
+                        console.log("NextDay", nextDay)
                         closing_period.forEach((item) => {
                             //     Create a date for date_from and set the time to 00:00:00
                             let date_from = new Date(item.date_from)
@@ -206,8 +205,7 @@ WebsiteSaleDeliveryWidget.include({
                         })
                         let delay = 0
                         nextDay.setDate(nextDay.getDate() + numOfDays)
-                        nextDay.setHours(0, 0, 0, 0)
-                        console.log("nextDay", nextDay)
+
                         while (nextDay <= lastDate) {
                             if (closing_period.length > 0) {
                                 closing_period.forEach((item) => {
@@ -227,7 +225,10 @@ WebsiteSaleDeliveryWidget.include({
                                         } else if (select_delay_type == "week") {
                                             delay = Math.floor(Math.abs(nextDay - dateToday) / (1000 * 60 * 60 * 24 * 7))
                                         }
+                                        console.log('delay', delay)
+                                        console.log('hour_delay', hour_delay)
                                         if (delay >= hour_delay) {
+                                            console.log("ICI")
                                             dateWithdrawal.city = this.$city
                                             dateWithdrawal.street = this.$street
                                             dateWithdrawal.zip = this.$zip
@@ -250,6 +251,8 @@ WebsiteSaleDeliveryWidget.include({
                             } else {
                                 let dateWithdrawal = {}
                                 if (select_delay_type == "hour") {
+                                    console.log(nextDay)
+                                    console.log(dateToday)
                                     delay = Math.floor(Math.abs(nextDay - dateToday) / 3600000)
                                 }
                                 if (select_delay_type == "day") {
@@ -257,7 +260,10 @@ WebsiteSaleDeliveryWidget.include({
                                 } else if (select_delay_type == "week") {
                                     delay = Math.floor(Math.abs(nextDay - dateToday) / (1000 * 60 * 60 * 24 * 7))
                                 }
+                                console.log('delay', delay)
+                                console.log('hour_delay', hour_delay)
                                 if (delay >= hour_delay) {
+                                    console.log("ICI")
                                     dateWithdrawal.city = this.$city
                                     dateWithdrawal.street = this.$street
                                     dateWithdrawal.zip = this.$zip
@@ -279,10 +285,10 @@ WebsiteSaleDeliveryWidget.include({
                         }
                     })
                 }
-                console.log("working_days", working_days)
                 working_days.sort((a, b) => {
                     return new Date(a.date).getTime() - new Date(b.date).getTime();
                 }).forEach((sortedDate, index) => {
+                    console.log(sortedDate)
                     let cloneWithdrawal = withdrawalCard.cloneNode(true);
                     cloneWithdrawal.classList.remove('d-none')
                     cloneWithdrawal.addEventListener('click', () => {

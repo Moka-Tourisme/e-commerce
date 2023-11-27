@@ -1,6 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-withdrawal_point,withdrawal.point,model_withdrawal_point,base.group_portal,1,0,0,0
-delivery_carrier,delivery.carrier,model_delivery_carrier,base.group_portal,1,0,0,0
-delivery_closing_period,delivery.closing.period,model_delivery_closing_period,base.group_portal,1,0,0,0
-resource_calendar,resource.calendar,model_resource_calendar,base.group_portal,1,0,0,0
-resource_calendar_attendance,resource.calendar.attendance,model_resource_calendar_attendance,base.group_portal,1,0,0,0
+withdrawal_point,withdrawal.point,delivery_withdrawal_method.model_delivery_withdrawal_point,base.group_portal,1,0,0,0
+delivery_carrier,delivery.carrier,delivery.model_delivery_carrier,base.group_portal,1,0,0,0
+delivery_closing_period,delivery.closing.period,delivery_withdrawal_method.model_delivery_closing_period,base.group_portal,1,0,0,0
+resource_calendar,resource.calendar,resource.model_resource_calendar,base.group_portal,1,0,0,0
+resource_calendar_attendance,resource.calendar.attendance,resource.model_resource_calendar_attendance,base.group_portal,1,0,0,0

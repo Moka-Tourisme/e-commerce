@@ -17,6 +17,7 @@
         'views/website_sale.xml',
         'data/stock_rule.xml',
         'data/mail_template_data.xml',
+        'security/ir.model.access.csv',
     ],
     'assets': {
         'web.assets_frontend': [

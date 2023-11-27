@@ -192,7 +192,6 @@ WebsiteSaleDeliveryWidget.include({
                         }
                         let numOfDays = ((dayOfWeek + 7 - dateToday.getDay()) % 7)
                         let nextDay = new Date(this.$first_pickup_date)
-                        console.log("NextDay", nextDay)
                         closing_period.forEach((item) => {
                             //     Create a date for date_from and set the time to 00:00:00
                             let date_from = new Date(item.date_from)
@@ -205,6 +204,7 @@ WebsiteSaleDeliveryWidget.include({
                         })
                         let delay = 0
                         nextDay.setDate(nextDay.getDate() + numOfDays)
+                        nextDay.setHours(0, 0, 0, 0)
 
                         while (nextDay <= lastDate) {
                             if (closing_period.length > 0) {
@@ -225,10 +225,7 @@ WebsiteSaleDeliveryWidget.include({
                                         } else if (select_delay_type == "week") {
                                             delay = Math.floor(Math.abs(nextDay - dateToday) / (1000 * 60 * 60 * 24 * 7))
                                         }
-                                        console.log('delay', delay)
-                                        console.log('hour_delay', hour_delay)
                                         if (delay >= hour_delay) {
-                                            console.log("ICI")
                                             dateWithdrawal.city = this.$city
                                             dateWithdrawal.street = this.$street
                                             dateWithdrawal.zip = this.$zip
@@ -251,8 +248,6 @@ WebsiteSaleDeliveryWidget.include({
                             } else {
                                 let dateWithdrawal = {}
                                 if (select_delay_type == "hour") {
-                                    console.log(nextDay)
-                                    console.log(dateToday)
                                     delay = Math.floor(Math.abs(nextDay - dateToday) / 3600000)
                                 }
                                 if (select_delay_type == "day") {
@@ -260,10 +255,7 @@ WebsiteSaleDeliveryWidget.include({
                                 } else if (select_delay_type == "week") {
                                     delay = Math.floor(Math.abs(nextDay - dateToday) / (1000 * 60 * 60 * 24 * 7))
                                 }
-                                console.log('delay', delay)
-                                console.log('hour_delay', hour_delay)
                                 if (delay >= hour_delay) {
-                                    console.log("ICI")
                                     dateWithdrawal.city = this.$city
                                     dateWithdrawal.street = this.$street
                                     dateWithdrawal.zip = this.$zip
@@ -288,7 +280,6 @@ WebsiteSaleDeliveryWidget.include({
                 working_days.sort((a, b) => {
                     return new Date(a.date).getTime() - new Date(b.date).getTime();
                 }).forEach((sortedDate, index) => {
-                    console.log(sortedDate)
                     let cloneWithdrawal = withdrawalCard.cloneNode(true);
                     cloneWithdrawal.classList.remove('d-none')
                     cloneWithdrawal.addEventListener('click', () => {
@@ -296,8 +287,9 @@ WebsiteSaleDeliveryWidget.include({
                             modal.find('.WP_RDaysList')[0].querySelector('.active').classList.remove('active');
                         }
                         this.lastRelaySelected = sortedDate;
-                        this.$modal_withdrawal.find('#btn_confirm_withdrawal_point').removeClass('disabled');
                         cloneWithdrawal.classList.add('active');
+                        this.$modal_withdrawal.find('#btn_confirm_withdrawal_point').removeClass('disabled');
+                        this.$modal_withdrawal.find('#btn_confirm_withdrawal_point').prop('disabled', false);
                     });
                     cloneWithdrawal.querySelector('.WPDay').innerHTML = (new Date(sortedDate.date).toLocaleDateString(undefined, {
                         day: 'numeric'

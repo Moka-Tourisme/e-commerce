@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_report_label_wizard_line,report.label.wizard.line,model_report_label_wizard_line,base.group_user,1,1,1,1
+ADD ACCESS TO PORTAL GROUPS FOR withdrawal point
+withdrawal_point,withdrawal.point,model_withdrawal_point,base.group_portal,1,0,0,0
+delivery_carrier,delivery.carrier,model_delivery_carrier,base.group_portal,1,0,0,0
+delivery_closing_period,delivery.closing.period,model_delivery_closing_period,base.group_portal,1,0,0,0
+resource_calendar,resource.calendar,model_resource_calendar,base.group_portal,1,0,0,0
+resource_calendar_attendance,resource.calendar.attendance,model_resource_calendar_attendance,base.group_portal,1,0,0,0

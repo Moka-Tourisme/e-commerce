@@ -7,7 +7,7 @@
         This module allow your customer to choose a Withdrawal Point and use it as shipping address.
     """,
     'category': 'Website/Website',
-    'version': '15.0.0.1.0',
+    'version': '15.0.0.1.1',
     'depends': ['website_sale_delivery', 'delivery_withdrawal_method', 'purchase', 'purchase_stock', 'stock', 'sale'],
     'data': [
         'report/sale_report_templates.xml',
@@ -22,7 +22,8 @@
     'assets': {
         'web.assets_frontend': [
             'website_sale_delivery_withdrawal/static/src/js/website_sale_delivery_withdrawal.js',
-            'website_sale_delivery_withdrawal/static/src/css/website_sale_delivery_withdrawal.css'
+            'website_sale_delivery_withdrawal/static/src/css/website_sale_delivery_withdrawal.css',
+            'website_sale_delivery_withdrawal/static/src/js/website_sale_payment.js'
         ],
     },
     'license': 'AGPL-3',

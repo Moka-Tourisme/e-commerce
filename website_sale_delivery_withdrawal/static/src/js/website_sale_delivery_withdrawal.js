@@ -290,6 +290,7 @@ WebsiteSaleDeliveryWidget.include({
                         cloneWithdrawal.classList.add('active');
                         this.$modal_withdrawal.find('#btn_confirm_withdrawal_point').removeClass('disabled');
                         this.$modal_withdrawal.find('#btn_confirm_withdrawal_point').prop('disabled', false);
+                        this.$modal_withdrawal.find('#btn_confirm_withdrawal_point').data('withdrawal_point_id', sortedDate.withdrawal_point_id);
                     });
                     cloneWithdrawal.querySelector('.WPDay').innerHTML = (new Date(sortedDate.date).toLocaleDateString(undefined, {
                         day: 'numeric'

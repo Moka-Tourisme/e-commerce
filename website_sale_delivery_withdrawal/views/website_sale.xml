@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+
+    <template id="website_sale_delivery_withdrawal_payment_delivery_methods"
+              inherit_id="website_sale_delivery.payment_delivery_methods">
+        <xpath expr="." position="inside">
+            <button type="button" class="btn btn-primary btn-sm float-right bg-primary">Select</button>
+        </xpath>
+    </template>
+
     <template id="website_sale_delivery_withdrawal_address_on_payment" inherit_id="website_sale.address_on_payment">
         <xpath expr="//div[@id='shipping_and_billing']" position="inside">
             <t t-if="order.commitment_hour_from and order.commitment_hour_to">
-                <div>
+                <div class="o_delivery_carrier_schedule">
                     <b>Schedule:</b>
                     <span t-field="order.commitment_date" t-options='{"format": "d MMM yyyy"}' class="address-inline"/>
                     <span>from</span>
@@ -24,6 +32,7 @@
             </div>
         </xpath>
     </template>
+
 
     <template id="payment_delivery_withdrawal_inherit" inherit_id="website_sale_delivery.payment_delivery">
         <xpath expr="//div[@id='delivery_carrier']" position="replace">
@@ -59,7 +68,7 @@
 
     <template id="website_sale_delivery_withdrawal_confirmation" inherit_id="website_sale.confirmation">
         <xpath expr="//div[hasclass('card-body')]" position="inside">
-            <div t-if="order.commitment_hour_from and order.commitment_hour_to"
+            <div class="o_delivery_carrier_schedule" t-if="order.commitment_hour_from and order.commitment_hour_to"
                  groups="sale.group_delivery_invoice_address">
                 <b>Schedule:</b>
                 <span t-field="order.commitment_date" t-options='{"format": "d MMM yyyy"}' class="address-inline"/>

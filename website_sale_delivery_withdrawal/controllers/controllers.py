@@ -85,8 +85,9 @@ class WithdrawalPoints(http.Controller):
                             print("Next day available 2", date_planned + relativedelta(days=i))
                             date_planned = date_planned + relativedelta(days=i)
                             if date_planned > new_date_planned:
-                                new_date_planned = format_datetime(self.env, date_planned, 'Europe/Paris',
-                                                                   dt_format="dd/MM/yyyy HH:mm")
+                                new_date_planned = date_planned
+                                print("New date planned", new_date_planned)
+
                             break
         return {
             'first_pickup_date': new_date_planned

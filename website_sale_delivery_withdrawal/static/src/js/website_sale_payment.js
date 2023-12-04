@@ -11,12 +11,7 @@ odoo.define('website_sale_delivery_withdrawal.checkout', function (require) {
         events: {
             'click #btn_confirm_withdrawal_point ': '_onDeliveryWithdrawalClick',
         },
-
-        init: function () {
-            console.log("INIT")
-
-        },
-
+        
         /**
          * @override
          */

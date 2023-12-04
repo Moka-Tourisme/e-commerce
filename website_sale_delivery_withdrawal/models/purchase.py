@@ -145,15 +145,20 @@ class PurchaseOrderLine(models.Model):
             else:
                 return datetime.today()
 
-    def _get_next_pickup_date(self, seller, date_planned):
+      def _get_next_pickup_date(self, seller, date_planned):
         today = date_planned
         day_of_week = today.weekday()
         days = [seller.name.mon, seller.name.tue, seller.name.wed, seller.name.thu, seller.name.fri, seller.name.sat,
                 seller.name.sun]
 
-        if days[day_of_week]:
+        # Check if at least one day is selected
+        if not any(days):
             return today
         else:
-            for i in range(1, 7):
-                if days[(day_of_week + i) % 7]:
-                    return today + relativedelta(days=i)
+            if days[day_of_week]:
+                return today
+            else:
+                for i in range(1, 7):
+                    if days[(day_of_week + i) % 7]:
+                        return today + relativedelta(days=i)
+
